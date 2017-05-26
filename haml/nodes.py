@@ -20,7 +20,7 @@ class Base(object):
 
         This includes inline children, and control structure `else` clauses.
         '''
-        
+
         if self.inline_child:
             yield self.inline_child
         for x in self.children:
@@ -31,7 +31,7 @@ class Base(object):
             self.inline_child = node
         else:
             self.children.append(node)
-    
+
     def consume_sibling(self, node):
         return False
 
@@ -94,7 +94,7 @@ class FilterBase(Base):
 
 
 class GreedyBase(Base):
-    
+
     def __init__(self, *args, **kwargs):
         super(GreedyBase, self).__init__(*args, **kwargs)
         self._greedy_root = self
@@ -211,7 +211,8 @@ class Tag(Base):
                 valid = False
             else:
                 func = root.body[0].value
-                valid = not func.starargs and not func.kwargs
+                valid = not getattr(func, 'starargs', None) and \
+                    not getattr(func, 'kwargs', None)
                 literal_attrs = {}
 
             if valid:
@@ -378,14 +379,14 @@ class Control(Base):
         if node.type == 'else' and self.else_ is None:
             self.else_ = node
             return True
-    
+
     def print_tree(self, depth, inline=False):
         super(Control, self).print_tree(depth)
         for node in self.elifs:
             node.print_tree(depth)
         if self.else_ is not None:
             self.else_.print_tree(depth)
-            
+
     def render(self, engine):
         to_chain = [self.render_start(engine), self.render_content(engine)]
         for node in self.elifs:
@@ -394,7 +395,7 @@ class Control(Base):
             to_chain.append(self.else_.render(engine))
         to_chain.append(self.render_end(engine))
         return chain(*to_chain)
-        
+
     def render_start(self, engine):
         yield engine.line_continuation
         yield engine.indent(-1)
@@ -442,7 +443,7 @@ class Python(FilterBase):
             yield engine.endl
         yield '%>'
         yield engine.endl_no_break
-    
+
     def __repr__(self):
         return '%s(%r%s)' % (
             self.__class__.__name__,
