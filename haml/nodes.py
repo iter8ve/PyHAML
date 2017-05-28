@@ -202,7 +202,6 @@ class Tag(Base):
             const_attrs['__adapt_camelcase'] = False
 
         if kwargs_expr:
-
             # If all of the kwargs are literals, then lets convert them up front.
 
             try:
@@ -211,8 +210,11 @@ class Tag(Base):
                 valid = False
             else:
                 func = root.body[0].value
-                valid = not getattr(func, 'starargs', None) and \
-                    not getattr(func, 'kwargs', None)
+                # 3.5 AST removes starargs and kwargs
+                valid = not any((
+                    getattr(func, 'starargs', None),
+                    getattr(func, 'kwargs', None),
+                ))
                 literal_attrs = {}
 
             if valid:
@@ -226,6 +228,13 @@ class Tag(Base):
                         literal_attrs.update(value)
             if valid:
                 for kwarg in func.keywords:
+                    # 3.5 AST supports unpacking dict literals
+                    # with an arg of None; we want this to throw
+                    # support back to kwargs_expr, so this case
+                    # should register as 'invalid'
+                    if kwarg.arg is None:
+                        valid = False
+                        break
                     try:
                         value = ast.literal_eval(kwarg.value)
                     except ValueError:
