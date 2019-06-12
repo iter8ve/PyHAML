@@ -1,5 +1,5 @@
 import re
-import cgi
+import html
 
 from six import string_types, iteritems
 
@@ -22,7 +22,7 @@ def adapt_camelcase(name, seperator):
 def _format_mako_attr_pair(k, v):
     if v is True:
         v = k
-    return ' %s="%s"' % (k, cgi.escape("%s" % v).replace('"', '&quot;'))
+    return ' %s="%s"' % (k, html.escape("%s" % v).replace('"', '&quot;'))
 
 
 def flatten_attr_list(input):
@@ -76,5 +76,3 @@ def attribute_str(*args, **kwargs):
         pairs.extend(flatten_attr_dict(k, v))
     pairs.sort(key=lambda pair: (_attr_sort_order.get(pair[0], 0), pair[0]))
     return ''.join(_format_mako_attr_pair(k, v) for k, v in pairs if v)
-
-
