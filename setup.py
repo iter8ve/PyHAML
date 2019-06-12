@@ -3,22 +3,22 @@ from setuptools import setup
 
 setup(
     name='PyHAML',
-    version='1.1.0',
+    version='1.1.2',
     description='Pythonic implementation of HAML, cross compiling to Mako template syntax.',
-    url='http://github.com/mikeboers/PyHAML',
-    
-    author='Mike Boers',
-    author_email='PyHAML@mikeboers.com',
+    url='http://github.com/iter8ve/PyHAML',
+
+    author='bourke',
+    author_email='michael@iter8ve.com',
     license='BSD-3',
-    
+
     packages=['haml'],
-    
+
     install_requires=['mako', 'six'],
     scripts=[
         'scripts/haml-preprocess',
         'scripts/haml-render',
     ],
-    
+
     classifiers=[
        'Development Status :: 5 - Production/Stable',
        'Intended Audience :: Developers',
